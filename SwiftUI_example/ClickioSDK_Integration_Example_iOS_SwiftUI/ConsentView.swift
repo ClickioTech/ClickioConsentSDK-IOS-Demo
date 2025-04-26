@@ -13,7 +13,7 @@ struct ConsentView: View {
     @State private var isInitialized = false
     
     // MARK: Set up SDK Consifuration
-    private let config = ClickioConsentSDK.Config(siteId: "241131", appLanguage: "en")
+    private let config = ClickioConsentSDK.Config(siteId: "241131", appLanguage: "en") // Replace "241131" with your own Site ID
     
     // MARK: Body
     var body: some View {

@@ -15,7 +15,7 @@ class ConsentViewController: UIViewController {
     private var openConsentButton: UIButton!
     
     // MARK: Set up SDK Consifuration
-    private let config = ClickioConsentSDK.Config(siteId: "241131", appLanguage: "en")
+    private let config = ClickioConsentSDK.Config(siteId: "241131", appLanguage: "en") // Replace "241131" with your own Site ID
     
     // MARK: Methods
     override func viewDidLoad() {
