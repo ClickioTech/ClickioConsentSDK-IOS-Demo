@@ -5,31 +5,40 @@
 
 import SwiftUI
 import ClickioConsentSDKManager
+import GoogleMobileAds
 
 // MARK: - ConsentView
 struct ConsentView: View {
     // MARK: Properties
     @State private var consentData: [ConsentDataItem] = ConsentView.defaultConsentData()
     @State private var isInitialized = false
+    @State private var shouldLoadAds = false
+    @State private var showClearDataAlert = false
+    @AppStorage("openDialogOnStart") private var openDialogOnStart = false
+    @AppStorage("enableVerboseLogging") private var enableVerboseLogging = true
     
-    // MARK: Set up SDK Consifuration
-    private let config = ClickioConsentSDK.Config(siteId: "241131", appLanguage: "en") // Replace "241131" with your own Site ID
+    // MARK: Set up SDK Configuration
+    private let config = ClickioConsentSDK.Config(siteId: "240920", appLanguage: "en") // Replace "241131" with your own Site ID
     
     // MARK: Body
     var body: some View {
         ZStack {
-            VStack {
+            VStack(spacing: 20) {
                 buttonsSection
                 consentList
+                BannerAdView(adUnitID: "/21775744923/example/fixed-size-banner", shouldLoadAds: shouldLoadAds)
+                    .frame(height: 100)
             }
+            .padding()
             .disabled(!isInitialized)
             
             if !isInitialized {
                 Color.black.opacity(0.4)
                     .ignoresSafeArea()
-                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    .padding()
-                    .background(RoundedRectangle(cornerRadius: 10).fill(Color.gray.opacity(0.8)))
+                    .overlay(
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    )
             }
         }
         .onAppear(perform: initializeSDK)
@@ -38,24 +47,25 @@ struct ConsentView: View {
     // MARK: Subviews
     private var buttonsSection: some View {
         VStack(spacing: 10) {
+            Toggle("Open dialog when application starts", isOn: $openDialogOnStart)
+                .padding(.horizontal)
+            
+            Toggle("Clickio SDK verbose logging", isOn: $enableVerboseLogging)
+                .padding(.horizontal)
+                .onChange(of: enableVerboseLogging) { newValue in
+                    ClickioConsentSDK.shared.setLogsMode(newValue ? .verbose : .disabled)
+                }
+            
             Button("Open Consent Dialog") {
-                // MARK: If an app has it's own ATT Permission manager it just sends false in showATTFirst & attNeeded parameters and calls it's own ATT method and then calls openDialog method.
-                
-                // MARK: Important: make sure that user has given permission in the ATT dialog and only then perfrom openDialog method call! Showing CMP regardles given ATT Permission is not recommended by Apple. Moreover, openDialog API call can be blocked by Apple until user makes their choice.
-                
-                
-                // Example scenario if you have custom ATT Manager:
-                /*
-                 DefaultAppATTManager.shared.requestPermission { isGrantedAccess in
-                 print(isGrantedAccess)
-                 ClickioConsentSDK.shared.openDialog(
-                     mode: .resurface,
-                     showATTFirst: false,
-                     attNeeded: false
-                 )
-                 }
-                 */
-                
+                ClickioConsentSDK.shared.openDialog(
+                    mode: .default,
+                    showATTFirst: true,
+                    attNeeded: true
+                )
+            }
+            .buttonStyle(PrimaryButtonStyle(disabled: !isInitialized))
+            
+            Button("Resurface") {
                 ClickioConsentSDK.shared.openDialog(
                     mode: .resurface,
                     showATTFirst: true,
@@ -68,6 +78,25 @@ struct ConsentView: View {
                 refreshConsentData()
             }
             .buttonStyle(SecondaryButtonStyle())
+            
+            Button(action: {
+                showClearDataAlert = true
+            }) {
+                Text("Clear Data")
+                    .foregroundColor(.white)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.red)
+                    .cornerRadius(10)
+            }
+            .alert("Clear Data", isPresented: $showClearDataAlert) {
+                Button("Cancel", role: .cancel) { }
+                Button("Clear", role: .destructive) {
+                    clearUserDefaults()
+                }
+            } message: {
+                Text("This will clear all stored consent data. Are you sure?")
+            }
         }
         .padding()
     }
@@ -81,21 +110,64 @@ struct ConsentView: View {
     // MARK: - Methods
     private func initializeSDK() {
         // MARK: Set up event logger
-        ClickioConsentSDK.shared.setLogsMode(.verbose)
+        ClickioConsentSDK.shared.setLogsMode(enableVerboseLogging ? .verbose : .disabled)
         
         // MARK: Register callbacks before initialization
         ClickioConsentSDK.shared.onReady {
             isInitialized = true
+            print("ConsentView: SDK is ready")
+            
+            // Handle consent state using the shared function
+            handleConsentStateChange()
+            
+            // Open dialog if enabled
+            if openDialogOnStart {
+                print("ConsentView: Opening dialog on start")
+                ClickioConsentSDK.shared.openDialog(
+                    mode: .default,
+                    showATTFirst: true,
+                    attNeeded: true
+                )
+            }
         }
         
         ClickioConsentSDK.shared.onConsentUpdated {
-            refreshConsentData()
+            print("ConsentView: Consent updated")
+            // Handle consent state using the shared function
+            handleConsentStateChange()
         }
         
         // MARK: Initialize SDK
+        print("ConsentView: Starting SDK initialization")
         Task {
             await ClickioConsentSDK.shared.initialize(configuration: config)
         }
+    }
+    
+    // Extracted function to handle consent state changes
+    private func handleConsentStateChange() {
+        // Check consent state
+        if let consentState = ClickioConsentSDK.shared.checkConsentState() {
+            print("ConsentView: Current consent state = \(consentState)")
+            if consentState == .notApplicable || consentState == .gdprDecisionObtained || consentState == .us {
+                print("ConsentView: Consent state allows ads, initializing Google Mobile Ads if needed")
+                // Initialize Google Mobile Ads if not already initialized
+                if !shouldLoadAds {
+                    MobileAds.shared.start(completionHandler: nil)
+                    shouldLoadAds = true
+                }
+            } else {
+                print("ConsentView: Consent state does not allow ads, stopping ads")
+                // If consent is not in allowed states, stop loading ads
+                shouldLoadAds = false
+            }
+        } else {
+            print("ConsentView: Unable to get consent state")
+            shouldLoadAds = false
+        }
+        
+        // Refresh consent data
+        refreshConsentData()
     }
     
     // Default "Unknown" values for list initialization
@@ -165,6 +237,26 @@ struct ConsentView: View {
             ConsentDataItem("getConsentedNonTcfPurposes", consentedNonTcfPurposes),
             ConsentDataItem("getGoogleConsentMode", googleConsentString)
         ]
+    }
+    
+    private func clearUserDefaults() {
+        if let bundleID = Bundle.main.bundleIdentifier {
+            // Save the openDialogOnStart and enableVerboseLogging values before clearing
+            let savedOpenDialogOnStart = openDialogOnStart
+            let savedEnableVerboseLogging = enableVerboseLogging
+            
+            // Clear all UserDefaults
+            UserDefaults.standard.removePersistentDomain(forName: bundleID)
+            UserDefaults.standard.synchronize()
+            
+            // Restore the saved values
+            openDialogOnStart = savedOpenDialogOnStart
+            enableVerboseLogging = savedEnableVerboseLogging
+            
+            print("UserDefaults cleared for bundle: \(bundleID)")
+            // Refresh consent data after clearing
+            refreshConsentData()
+        }
     }
 }
 
