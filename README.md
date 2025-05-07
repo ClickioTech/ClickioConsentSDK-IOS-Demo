@@ -2,7 +2,7 @@
 
 ## Description
 
-This sample app demonstrates how to integrate the  [Clickio Consent SDK](https://github.com/ClickioTech/ClickioConsentSDK-IOS)  into a basic iOS application both for UIKit & SwiftUI projects using Swift.
+This sample app demonstrates how to integrate the  [Clickio Consent SDK](https://github.com/ClickioTech/ClickioConsentSDK-IOS) into a basic iOS application both for UIKit & SwiftUI projects using Swift.
 
 In particular, it shows how to:
 
@@ -35,7 +35,7 @@ override func viewDidLoad() {
   // set-up event logger
   ClickioConsentSDK.shared.setLogsMode(.verbose)
   
-  // Register callbacks before initialization 
+  // register callbacks before initialization 
   ClickioConsentSDK.shared.onReady { [weak self] in
     self?.openConsentButton.isEnabled = true
   }
@@ -53,12 +53,11 @@ override func viewDidLoad() {
 
 // Call WebView Dialog
 @objc private func openConsentWindow() {
-ClickioConsentSDK.shared.openDialog(
-mode: .resurface,
-in: self, // use this parameter in UIKit projects to explicitly specify on which UIViewController the dialog will be presented. Don't use this parameter in SwiftUI projects.
-showATTFirst: true,
-attNeeded: true
-)
+    ClickioConsentSDK.shared.openDialog(
+        mode: .resurface,
+        in: self,   // use this parameter in UIKit projects to explicitly specify on which UIViewController the dialog will be presented. Don't use this parameter in SwiftUI projects.
+        attNeeded: true
+    )
 }
 ```
 -   The  `241131`  in the line  `config = ClickioConsentSDK.Config("241131", "en")`  can be replaced with your own site identifier provided by Clickio.
@@ -94,7 +93,6 @@ private let config = ClickioConsentSDK.Config(siteId: "241131", appLanguage: "en
 Button("Open Consent Dialog") {
   ClickioConsentSDK.shared.openDialog(
     mode: .resurface,
-    showATTFirst: true,
     attNeeded: true
   )
 }

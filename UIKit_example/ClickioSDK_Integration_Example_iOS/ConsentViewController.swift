@@ -36,8 +36,9 @@ class ConsentViewController: UIViewController {
         
         ClickioConsentSDK.shared.onConsentUpdated { [weak self] in
             guard let self = self else { return }
-            print("Consent updated - WebView storage updated")
-            getConsentData()
+                DispatchQueue.main.async {
+                    self.getConsentData()
+                }
         }
         
         // MARK: Initialize SDK
@@ -48,27 +49,26 @@ class ConsentViewController: UIViewController {
     
     // MARK: Call WebView Dialog
     @objc private func openConsentWindow() {
-        // MARK: If an app has it's own ATT Permission manager it just sends false in showATTFirst & attNeeded parameters and calls it's own ATT method and then calls openDialog method.
+        // MARK: If an app has it's own ATT Permission manager it just sends false in attNeeded parameter, calls it's own ATT method and then calls openDialog method.
         
-        // MARK: Important: make sure that user has given permission in the ATT dialog and only then perfrom openDialog method call! Showing CMP regardles given ATT Permission is not recommended by Apple. Moreover, openDialog API call can be blocked by Apple until user makes their choice.
+        // MARK: Important: make sure that user has given permission in the ATT dialog and only then perfrom openDialog method call! Showing CMP regardles given ATT Permission is not recommended by Apple. Moreover, API calls to SDK's domains will be blocked by Apple until user provides their permission in ATT dialog. Otherwise it will lead to incorrect work of the SDK.
         
         // Example scenario with you custom ATT Manager:
-        /*
-         DefaultAppATTManager.shared.requestPermission { isGrantedAccess in
-         print(isGrantedAccess)
-         ClickioConsentSDK.shared.openDialog(
-             mode: .resurface,
-             in: self,
-             showATTFirst: false,
-             attNeeded: false
-         )
-         }
-         */
-        
+//        DefaultAppATTManager.shared.requestPermission { isGrantedAccess in
+//            if isGrantedAccess {
+//                ClickioConsentSDK.shared.openDialog(
+//                    mode: .resurface,
+//                    in: self,
+//                    attNeeded: false
+//                )
+//            } else {
+//                print("Consent Dialog can't be shown: user rejected ATT permission")
+//            }
+//        }
+         
         ClickioConsentSDK.shared.openDialog(
             mode: .resurface,
             in: self,
-            showATTFirst: true,
             attNeeded: true
         )
     }

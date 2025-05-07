@@ -39,26 +39,24 @@ struct ConsentView: View {
     private var buttonsSection: some View {
         VStack(spacing: 10) {
             Button("Open Consent Dialog") {
-                // MARK: If an app has it's own ATT Permission manager it just sends false in showATTFirst & attNeeded parameters and calls it's own ATT method and then calls openDialog method.
+                // MARK: If an app has it's own ATT Permission manager it just sends false in attNeeded parameter, calls it's own ATT method and then calls openDialog method.
                 
-                // MARK: Important: make sure that user has given permission in the ATT dialog and only then perfrom openDialog method call! Showing CMP regardles given ATT Permission is not recommended by Apple. Moreover, openDialog API call can be blocked by Apple until user makes their choice.
+                // MARK: Important: make sure that user has given permission in the ATT dialog and only then perfrom openDialog method call! Showing CMP regardles given ATT Permission is not recommended by Apple. Moreover, API calls to SDK's domains will be blocked by Apple until user provides their permission in ATT dialog. Otherwise it will lead to incorrect work of the SDK.
                 
-                
-                // Example scenario if you have custom ATT Manager:
-                /*
-                 DefaultAppATTManager.shared.requestPermission { isGrantedAccess in
-                 print(isGrantedAccess)
-                 ClickioConsentSDK.shared.openDialog(
-                     mode: .resurface,
-                     showATTFirst: false,
-                     attNeeded: false
-                 )
-                 }
-                 */
+                // Example scenario with you custom ATT Manager:
+//                DefaultAppATTManager.shared.requestPermission { isGrantedAccess in
+//                    if isGrantedAccess {
+//                        ClickioConsentSDK.shared.openDialog(
+//                            mode: .resurface,
+//                            attNeeded: false
+//                        )
+//                    } else {
+//                        print("Consent Dialog can't be shown: user rejected ATT permission")
+//                    }
+//                }
                 
                 ClickioConsentSDK.shared.openDialog(
                     mode: .resurface,
-                    showATTFirst: true,
                     attNeeded: true
                 )
             }

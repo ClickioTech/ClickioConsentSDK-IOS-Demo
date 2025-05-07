@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C40E8D872DCBBF0B00930CC7 /* ClickioConsentSDKManager in Frameworks */ = {isa = PBXBuildFile; productRef = C40E8D862DCBBF0B00930CC7 /* ClickioConsentSDKManager */; };
+		C44669D82DC2502200F5E13E /* ClickioConsentSDKManager in Frameworks */ = {isa = PBXBuildFile; productRef = C44669D72DC2502200F5E13E /* ClickioConsentSDKManager */; };
 		C4EE07182DB7F63C00AA8A5F /* ClickioConsentSDKManager in Frameworks */ = {isa = PBXBuildFile; productRef = C4EE07172DB7F63C00AA8A5F /* ClickioConsentSDKManager */; };
 		C4FF59172DBC48650061DB39 /* ClickioConsentSDKManager in Frameworks */ = {isa = PBXBuildFile; productRef = C4FF59162DBC48650061DB39 /* ClickioConsentSDKManager */; };
 /* End PBXBuildFile section */
@@ -55,6 +57,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C4EE07182DB7F63C00AA8A5F /* ClickioConsentSDKManager in Frameworks */,
+				C40E8D872DCBBF0B00930CC7 /* ClickioConsentSDKManager in Frameworks */,
+				C44669D82DC2502200F5E13E /* ClickioConsentSDKManager in Frameworks */,
 				C4FF59172DBC48650061DB39 /* ClickioConsentSDKManager in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -127,7 +131,7 @@
 			mainGroup = C49473B82D724DF900949C57;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				C4FF59152DBC48650061DB39 /* XCRemoteSwiftPackageReference "ClickioConsentSDK-IOS" */,
+				C40E8D852DCBBF0B00930CC7 /* XCRemoteSwiftPackageReference "ClickioConsentSDK-IOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C49473C22D724DF900949C57 /* Products */;
@@ -375,6 +379,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		C40E8D852DCBBF0B00930CC7 /* XCRemoteSwiftPackageReference "ClickioConsentSDK-IOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ClickioTech/ClickioConsentSDK-IOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.4;
+			};
+		};
 		C4EE07162DB7F63C00AA8A5F /* XCRemoteSwiftPackageReference "ClickioConsentSDK-IOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ClickioTech/ClickioConsentSDK-IOS";
@@ -394,6 +406,15 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		C40E8D862DCBBF0B00930CC7 /* ClickioConsentSDKManager */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C40E8D852DCBBF0B00930CC7 /* XCRemoteSwiftPackageReference "ClickioConsentSDK-IOS" */;
+			productName = ClickioConsentSDKManager;
+		};
+		C44669D72DC2502200F5E13E /* ClickioConsentSDKManager */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ClickioConsentSDKManager;
+		};
 		C4EE07172DB7F63C00AA8A5F /* ClickioConsentSDKManager */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C4EE07162DB7F63C00AA8A5F /* XCRemoteSwiftPackageReference "ClickioConsentSDK-IOS" */;
