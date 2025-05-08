@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ClickioTech/ClickioConsentSDK-IOS",
       "state" : {
-        "revision" : "853f787a55bc21f19e24c935f3c8dd753102f92e",
-        "version" : "1.0.2"
+        "revision" : "eeeb0637a62baf4342788160ebc61241e1f16252",
+        "version" : "1.0.4"
       }
     },
     {
