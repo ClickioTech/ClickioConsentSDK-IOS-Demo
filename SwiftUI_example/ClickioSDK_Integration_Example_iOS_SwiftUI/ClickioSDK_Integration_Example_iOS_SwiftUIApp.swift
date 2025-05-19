@@ -5,7 +5,6 @@
 
 import SwiftUI
 import ClickioConsentSDKManager
-import GoogleMobileAds
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,

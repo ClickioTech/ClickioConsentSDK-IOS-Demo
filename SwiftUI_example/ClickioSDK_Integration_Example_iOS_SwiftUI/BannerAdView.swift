@@ -116,10 +116,9 @@ struct BannerAdView: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ uiViewController: BannerViewController, context: Context) {
-        if shouldLoadAds {
-            print("BannerAdView: Loading ad in updateUIViewController")
-            uiViewController.bannerView.load(Request())
-        }
+        guard shouldLoadAds else { return }
+        print("BannerAdView: Loading ad in updateUIViewController")
+        uiViewController.bannerView.load(Request())
     }
     
     func makeCoordinator() -> Coordinator {
@@ -142,7 +141,7 @@ struct BannerAdView: UIViewControllerRepresentable {
             }
         }
         
-        // MARK: - DebugOptionsViewControllerDelegate
+        // MARK: DebugOptionsViewControllerDelegate
         func debugOptionsViewControllerDidDismiss(_ controller: DebugOptionsViewController) {
             if enableAdUnitLogging {
                 print("Debug options view controller dismissed")
@@ -206,7 +205,7 @@ struct BannerAdView: UIViewControllerRepresentable {
                             Ad Source ID: \(info.adSourceID ?? "nil")
                             Ad Source Instance Name: \(info.adSourceInstanceName ?? "nil")
                             Ad Source Instance ID: \(info.adSourceInstanceID ?? "nil")
-                            AdUnitMapping: \(info.adUnitMapping ?? [:])
+                            AdUnitMapping: \(info.adUnitMapping)
                             Error: \(info.error?.localizedDescription ?? "nil")
                             Latency: \(info.latency)
                             """)

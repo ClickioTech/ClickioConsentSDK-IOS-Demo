@@ -57,20 +57,12 @@ struct ConsentView: View {
                 }
             
             Button("Open Consent Dialog") {
-                ClickioConsentSDK.shared.openDialog(
-                    mode: .default,
-                    showATTFirst: true,
-                    attNeeded: true
-                )
+                ClickioConsentSDK.shared.openDialog(mode: .default, attNeeded: true)
             }
             .buttonStyle(PrimaryButtonStyle(disabled: !isInitialized))
             
             Button("Resurface") {
-                ClickioConsentSDK.shared.openDialog(
-                    mode: .resurface,
-                    showATTFirst: true,
-                    attNeeded: true
-                )
+                ClickioConsentSDK.shared.openDialog(mode: .resurface, attNeeded: true)
             }
             .buttonStyle(PrimaryButtonStyle(disabled: !isInitialized))
             
@@ -123,11 +115,7 @@ struct ConsentView: View {
             // Open dialog if enabled
             if openDialogOnStart {
                 print("ConsentView: Opening dialog on start")
-                ClickioConsentSDK.shared.openDialog(
-                    mode: .default,
-                    showATTFirst: true,
-                    attNeeded: true
-                )
+                ClickioConsentSDK.shared.openDialog(mode: .default, attNeeded: true)
             }
         }
         
