@@ -241,7 +241,7 @@ struct ConsentView: View {
             openDialogOnStart = savedOpenDialogOnStart
             enableVerboseLogging = savedEnableVerboseLogging
             
-            print("UserDefaults cleared for bundle: \(bundleID)")
+            print("UserDefaults storage cleared for bundle: \(bundleID)")
             // Refresh consent data after clearing
             refreshConsentData()
         }
