@@ -12,9 +12,10 @@ struct ConsentView: View {
     // MARK: Properties
     @State private var consentData: [ConsentDataItem] = ConsentView.defaultConsentData()
     @State private var isInitialized = false
-    @State private var shouldLoadAds = false
+    @State private var shouldShowAdsBanner = false
     @State private var showClearDataAlert = false
-    @AppStorage("openDialogOnStart") private var openDialogOnStart = false
+    
+    @AppStorage("showDefaultCMPOnLaunch") private var showDefaultCMPOnLaunch = true
     @AppStorage("enableVerboseLogging") private var enableVerboseLogging = true
     
     // MARK: Set up SDK Configuration
@@ -26,8 +27,10 @@ struct ConsentView: View {
             VStack(spacing: 20) {
                 buttonsSection
                 consentList
-                BannerAdView(adUnitID: "/21775744923/example/fixed-size-banner", shouldLoadAds: shouldLoadAds)
-                    .frame(height: 100)
+                if shouldShowAdsBanner {
+                    BannerAdView(adUnitID: "/21775744923/example/fixed-size-banner", shouldLoadAds: shouldShowAdsBanner)
+                        .frame(height: 100)
+                }
             }
             .padding()
             .disabled(!isInitialized)
@@ -47,21 +50,18 @@ struct ConsentView: View {
     // MARK: Subviews
     private var buttonsSection: some View {
         VStack(spacing: 10) {
-            Toggle("Open dialog when application starts", isOn: $openDialogOnStart)
-                .padding(.horizontal)
-            
-            Toggle("Clickio SDK verbose logging", isOn: $enableVerboseLogging)
+            Toggle("Enable verbose logging", isOn: $enableVerboseLogging)
                 .padding(.horizontal)
                 .onChange(of: enableVerboseLogging) { newValue in
                     ClickioConsentSDK.shared.setLogsMode(newValue ? .verbose : .disabled)
                 }
             
-            Button("Open Consent Dialog") {
+            Button("Default mode") {
                 ClickioConsentSDK.shared.openDialog(mode: .default, attNeeded: true)
             }
             .buttonStyle(PrimaryButtonStyle(disabled: !isInitialized))
             
-            Button("Resurface") {
+            Button("Resurface mode") {
                 ClickioConsentSDK.shared.openDialog(mode: .resurface, attNeeded: true)
             }
             .buttonStyle(PrimaryButtonStyle(disabled: !isInitialized))
@@ -74,14 +74,14 @@ struct ConsentView: View {
             Button(action: {
                 showClearDataAlert = true
             }) {
-                Text("Clear Data")
+                Text("Clear Cached Data")
                     .foregroundColor(.white)
                     .padding()
                     .frame(maxWidth: .infinity)
                     .background(Color.red)
                     .cornerRadius(10)
             }
-            .alert("Clear Data", isPresented: $showClearDataAlert) {
+            .alert("Clear Cached Data", isPresented: $showClearDataAlert) {
                 Button("Cancel", role: .cancel) { }
                 Button("Clear", role: .destructive) {
                     clearUserDefaults()
@@ -101,83 +101,76 @@ struct ConsentView: View {
     
     // MARK: - Methods
     private func initializeSDK() {
-        // MARK: Set up event logger
+        // set up event logger
         ClickioConsentSDK.shared.setLogsMode(enableVerboseLogging ? .verbose : .disabled)
         
-        // MARK: Register callbacks before initialization
+        // register callbacks before initialization
         ClickioConsentSDK.shared.onReady {
-            isInitialized = true
-            print("ConsentView: SDK is ready")
-            
-            // Handle consent state using the shared function
-            handleConsentStateChange()
-            
-            // Open dialog if enabled
-            if openDialogOnStart {
-                print("ConsentView: Opening dialog on start")
-                ClickioConsentSDK.shared.openDialog(mode: .default, attNeeded: true)
+            DispatchQueue.main.async {
+                guard !self.isInitialized else { return }
+                self.isInitialized = true
+                
+                // now that SDK is ready, open CMP if needed
+                if showDefaultCMPOnLaunch {
+                    print("ConsentView: SDK ready → opening default CMP")
+                    ClickioConsentSDK.shared.openDialog(mode: .default, attNeeded: true)
+                }
             }
         }
         
+        // register consent‐updated handler
         ClickioConsentSDK.shared.onConsentUpdated {
-            print("ConsentView: Consent updated")
-            // Handle consent state using the shared function
             handleConsentStateChange()
         }
         
-        // MARK: Initialize SDK
-        print("ConsentView: Starting SDK initialization")
+        // kick off async init
         Task {
             await ClickioConsentSDK.shared.initialize(configuration: config)
         }
     }
     
-    // Extracted function to handle consent state changes
     private func handleConsentStateChange() {
         // Check consent state
         if let consentState = ClickioConsentSDK.shared.checkConsentState() {
             print("ConsentView: Current consent state = \(consentState)")
-            if consentState == .notApplicable || consentState == .gdprDecisionObtained || consentState == .us {
+            if consentState != .gdprNoDecision {
                 print("ConsentView: Consent state allows ads, initializing Google Mobile Ads if needed")
-                // Initialize Google Mobile Ads if not already initialized
-                if !shouldLoadAds {
+                // If consent is in allowed states, load ads
+                shouldShowAdsBanner = true
                     MobileAds.shared.start(completionHandler: nil)
-                    shouldLoadAds = true
-                }
+                    shouldShowAdsBanner = true
             } else {
                 print("ConsentView: Consent state does not allow ads, stopping ads")
                 // If consent is not in allowed states, stop loading ads
-                shouldLoadAds = false
+                shouldShowAdsBanner = false
             }
         } else {
             print("ConsentView: Unable to get consent state")
-            shouldLoadAds = false
+            shouldShowAdsBanner = false
         }
-        
-        // Refresh consent data
         refreshConsentData()
     }
     
     // Default "Unknown" values for list initialization
     private static func defaultConsentData() -> [ConsentDataItem] {
         return [
-            ConsentDataItem("checkConsentScope", "Unknown"),
-            ConsentDataItem("checkConsentState", "Unknown"),
-            ConsentDataItem("checkConsentForPurpose(1)", "Unknown"),
-            ConsentDataItem("checkConsentForVendor(9)", "Unknown"),
-            ConsentDataItem(" ", " "),
-            ConsentDataItem("getTCString", "Unknown"),
-            ConsentDataItem("getACString", "Unknown"),
-            ConsentDataItem("getGPPString", "Unknown"),
-            ConsentDataItem("getConsentedTCFVendors", "Unknown"),
-            ConsentDataItem("getConsentedTCFLiVendors", "Unknown"),
-            ConsentDataItem("getConsentedTCFPurposes", "Unknown"),
-            ConsentDataItem("getConsentedTCFLiPurposes", "Unknown"),
-            ConsentDataItem("getConsentedGoogleVendors", "Unknown"),
-            ConsentDataItem("getConsentedOtherVendors", "Unknown"),
-            ConsentDataItem("getConsentedOtherLiVendors", "Unknown"),
-            ConsentDataItem("getConsentedNonTcfPurposes", "Unknown"),
-            ConsentDataItem("getGoogleConsentMode", "Unknown")
+            ConsentDataItem(title: "checkConsentScope", value: "Unknown"),
+            ConsentDataItem(title: "checkConsentState", value: "Unknown"),
+            ConsentDataItem(title: "checkConsentForPurpose(1)", value: "Unknown"),
+            ConsentDataItem(title: "checkConsentForVendor(9)", value: "Unknown"),
+            ConsentDataItem(title: " ", value: " "),
+            ConsentDataItem(title: "getTCString", value: "Unknown"),
+            ConsentDataItem(title: "getACString", value: "Unknown"),
+            ConsentDataItem(title: "getGPPString", value: "Unknown"),
+            ConsentDataItem(title: "getConsentedTCFVendors", value: "Unknown"),
+            ConsentDataItem(title: "getConsentedTCFLiVendors", value: "Unknown"),
+            ConsentDataItem(title: "getConsentedTCFPurposes", value: "Unknown"),
+            ConsentDataItem(title: "getConsentedTCFLiPurposes", value: "Unknown"),
+            ConsentDataItem(title: "getConsentedGoogleVendors", value: "Unknown"),
+            ConsentDataItem(title: "getConsentedOtherVendors", value: "Unknown"),
+            ConsentDataItem(title: "getConsentedOtherLiVendors", value: "Unknown"),
+            ConsentDataItem(title: "getConsentedNonTcfPurposes", value: "Unknown"),
+            ConsentDataItem(title: "getGoogleConsentMode", value: "Unknown")
         ]
     }
     
@@ -207,99 +200,36 @@ struct ConsentView: View {
         let googleConsentString = "Analytics Storage: \(googleConsentMode?.analyticsStorageGranted ?? false), Ad Storage: \(googleConsentMode?.adStorageGranted ?? false), Ad User Data: \(googleConsentMode?.adUserDataGranted ?? false), Ad Personalization: \(googleConsentMode?.adPersonalizationGranted ?? false)"
         
         consentData = [
-            ConsentDataItem("checkConsentScope", consentScope),
-            ConsentDataItem("checkConsentState", consentState),
-            ConsentDataItem("checkConsentForPurpose(1)", consentForPurpose),
-            ConsentDataItem("checkConsentForVendor(9)", consentForVendor),
-            ConsentDataItem(" ", " "),
-            ConsentDataItem("getTCString", tcString),
-            ConsentDataItem("getACString", acString),
-            ConsentDataItem("getGPPString", gppString),
-            ConsentDataItem("getConsentedTCFVendors", consentedTCFVendors),
-            ConsentDataItem("getConsentedTCFLiVendors", consentedTCFLiVendors),
-            ConsentDataItem("getConsentedTCFPurposes", consentedTCFPurposes),
-            ConsentDataItem("getConsentedTCFLiPurposes", consentedTCFLiPurposes),
-            ConsentDataItem("getConsentedGoogleVendors", consentedGoogleVendors),
-            ConsentDataItem("getConsentedOtherVendors", consentedOtherVendors),
-            ConsentDataItem("getConsentedOtherLiVendors", consentedOtherLiVendors),
-            ConsentDataItem("getConsentedNonTcfPurposes", consentedNonTcfPurposes),
-            ConsentDataItem("getGoogleConsentMode", googleConsentString)
+            ConsentDataItem(title: "checkConsentScope", value: consentScope),
+            ConsentDataItem(title: "checkConsentState", value: consentState),
+            ConsentDataItem(title: "checkConsentForPurpose(1)", value: consentForPurpose),
+            ConsentDataItem(title: "checkConsentForVendor(9)", value: consentForVendor),
+            ConsentDataItem(title: " ", value: " "),
+            ConsentDataItem(title: "getTCString", value: tcString),
+            ConsentDataItem(title: "getACString", value: acString),
+            ConsentDataItem(title: "getGPPString", value: gppString),
+            ConsentDataItem(title: "getConsentedTCFVendors", value: consentedTCFVendors),
+            ConsentDataItem(title: "getConsentedTCFLiVendors", value: consentedTCFLiVendors),
+            ConsentDataItem(title: "getConsentedTCFPurposes", value: consentedTCFPurposes),
+            ConsentDataItem(title: "getConsentedTCFLiPurposes", value: consentedTCFLiPurposes),
+            ConsentDataItem(title: "getConsentedGoogleVendors", value: consentedGoogleVendors),
+            ConsentDataItem(title: "getConsentedOtherVendors", value: consentedOtherVendors),
+            ConsentDataItem(title: "getConsentedOtherLiVendors", value: consentedOtherLiVendors),
+            ConsentDataItem(title: "getConsentedNonTcfPurposes", value: consentedNonTcfPurposes),
+            ConsentDataItem(title: "getGoogleConsentMode", value: googleConsentString)
         ]
     }
     
     private func clearUserDefaults() {
         if let bundleID = Bundle.main.bundleIdentifier {
-            // Save the openDialogOnStart and enableVerboseLogging values before clearing
-            let savedOpenDialogOnStart = openDialogOnStart
-            let savedEnableVerboseLogging = enableVerboseLogging
-            
             // Clear all UserDefaults
             UserDefaults.standard.removePersistentDomain(forName: bundleID)
             UserDefaults.standard.synchronize()
-            
-            // Restore the saved values
-            openDialogOnStart = savedOpenDialogOnStart
-            enableVerboseLogging = savedEnableVerboseLogging
-            
             print("UserDefaults storage cleared for bundle: \(bundleID)")
+            showDefaultCMPOnLaunch = false
             // Refresh consent data after clearing
             refreshConsentData()
         }
-    }
-}
-
-// MARK: - Data Models
-struct ConsentDataItem: Identifiable {
-    let id = UUID()
-    let title: String
-    let value: String
-    
-    init(_ title: String, _ value: String) {
-        self.title = title
-        self.value = value
-    }
-}
-
-// MARK: - Custom Views
-struct ConsentRow: View {
-    let title: String
-    let value: String
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.headline)
-            Text(value)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-        }
-        .padding(.vertical, 8)
-    }
-}
-
-struct PrimaryButtonStyle: ButtonStyle {
-    let disabled: Bool
-    
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(disabled ? Color.gray : Color.blue)
-            .foregroundColor(.white)
-            .cornerRadius(10)
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-    }
-}
-
-struct SecondaryButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color.gray.opacity(0.2))
-            .foregroundColor(.primary)
-            .cornerRadius(10)
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
     }
 }
 

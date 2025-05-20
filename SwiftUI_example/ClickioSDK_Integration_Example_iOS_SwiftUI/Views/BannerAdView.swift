@@ -1,3 +1,8 @@
+//
+//  BannerViewController.swift
+//  ClickioSDK_Integration_Example_iOS_SwiftUI
+//
+
 import SwiftUI
 import GoogleMobileAds
 
@@ -216,6 +221,7 @@ struct BannerAdView: UIViewControllerRepresentable {
     }
 }
 
-#Preview {
-    BannerAdView(adUnitID: "/21775744923/example/fixed-size-banner", shouldLoadAds: false)
-} 
+// MARK: - Preview
+//#Preview {
+//    BannerAdView(adUnitID: "/21775744923/example/fixed-size-banner", shouldShowAdsBanner: false)
+//} 
