@@ -5,10 +5,12 @@
 
 // MARK: - ConsentDataItem
 public struct ConsentDataItem {
+    // MARK: Properties
     let title: String
     let value: String?
 }
 
+// MARK: Methods
 public func defaultConsentData() -> [ConsentDataItem] {
     return [
         ConsentDataItem(title: "checkConsentScope", value: "Unknown"),

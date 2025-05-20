@@ -109,8 +109,8 @@ final class ConsentViewController: UIViewController {
       }
       defaultModeButton.setTitle("Default Mode", for: .normal)
       resurfaceModeButton.setTitle("Resurface Mode", for: .normal)
-      refreshButton.setTitle("Refresh Data", for: .normal)
-      clearDataButton.setTitle("Clear Data", for: .normal)
+      refreshButton.setTitle("Refresh Consent Data", for: .normal)
+      clearDataButton.setTitle("Clear Cached Data", for: .normal)
 
       defaultModeButton.addTarget(self, action: #selector(openDefaultConsent), for: .touchUpInside)
       resurfaceModeButton.addTarget(self, action: #selector(openResurfaceConsent), for: .touchUpInside)

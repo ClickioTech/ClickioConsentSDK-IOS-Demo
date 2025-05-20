@@ -47,7 +47,7 @@
 		C44365822DDC855100A5C1EA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C44365842DDC855100A5C1EA /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		C44365912DDC8ACD00A5C1EA /* ConsentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentCell.swift; sourceTree = "<group>"; };
-		C49473C12D724DF900949C57 /* ClickioSDK_Integration_Example_iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = ClickioSDK_Integration_Example_iOS.app; path = "/Users/Ekaterina/Desktop/ClickioConsentSDK-IOS-Demo/UIKit_example/build/Debug-iphoneos/ClickioSDK_Integration_Example_iOS.app"; sourceTree = "<absolute>"; };
+		C443659E2DDCC1D400A5C1EA /* ClickioSDK_Integration_Example_iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClickioSDK_Integration_Example_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +67,7 @@
 		C44365852DDC855100A5C1EA /* ClickioSDK_Integration_Example_iOS */ = {
 			isa = PBXGroup;
 			children = (
+				C443659F2DDCC1E800A5C1EA /* Data models */,
 				C44365942DDC8C9200A5C1EA /* ViewControllers */,
 				C44365932DDC8C7A00A5C1EA /* Default ATT Manager */,
 				C44365902DDC8A8E00A5C1EA /* UI Elements */,
@@ -84,7 +85,6 @@
 			isa = PBXGroup;
 			children = (
 				C44365912DDC8ACD00A5C1EA /* ConsentCell.swift */,
-				C443657C2DDC855100A5C1EA /* ConsentDataItem.swift */,
 			);
 			path = "UI Elements";
 			sourceTree = "<group>";
@@ -106,10 +106,19 @@
 			path = ViewControllers;
 			sourceTree = "<group>";
 		};
+		C443659F2DDCC1E800A5C1EA /* Data models */ = {
+			isa = PBXGroup;
+			children = (
+				C443657C2DDC855100A5C1EA /* ConsentDataItem.swift */,
+			);
+			path = "Data models";
+			sourceTree = "<group>";
+		};
 		C49473B82D724DF900949C57 = {
 			isa = PBXGroup;
 			children = (
 				C44365852DDC855100A5C1EA /* ClickioSDK_Integration_Example_iOS */,
+				C443659E2DDCC1D400A5C1EA /* ClickioSDK_Integration_Example_iOS.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -131,7 +140,7 @@
 			);
 			name = ClickioSDK_Integration_Example_iOS;
 			productName = TestClickioConsentSDKApp;
-			productReference = C49473C12D724DF900949C57 /* ClickioSDK_Integration_Example_iOS.app */;
+			productReference = C443659E2DDCC1D400A5C1EA /* ClickioSDK_Integration_Example_iOS.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
