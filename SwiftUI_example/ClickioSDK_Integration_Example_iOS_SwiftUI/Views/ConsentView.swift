@@ -19,7 +19,7 @@ struct ConsentView: View {
     @AppStorage("enableVerboseLogging") private var enableVerboseLogging = true
     
     // MARK: Set up SDK Configuration
-    private let config = ClickioConsentSDK.Config(siteId: "240920", appLanguage: "en") // Replace "241131" with your own Site ID
+    private let config = ClickioConsentSDK.Config(siteId: "241131", appLanguage: "en") // Replace "241131" with your own Site ID
     
     // MARK: Body
     var body: some View {
@@ -27,6 +27,7 @@ struct ConsentView: View {
             VStack(spacing: 20) {
                 buttonsSection
                 consentList
+                // MARK: НЕ СРАБАТЫВАЕТ БРЕЙКПОИНТ ПРИ ПОВТОРНОМ ЗАПУСКЕ
                 if shouldShowAdsBanner {
                     BannerAdView(adUnitID: "/21775744923/example/fixed-size-banner", shouldLoadAds: shouldShowAdsBanner)
                         .frame(height: 100)
@@ -56,11 +57,6 @@ struct ConsentView: View {
                     ClickioConsentSDK.shared.setLogsMode(newValue ? .verbose : .disabled)
                 }
             
-            Button("Default mode") {
-                ClickioConsentSDK.shared.openDialog(mode: .default, attNeeded: true)
-            }
-            .buttonStyle(PrimaryButtonStyle(disabled: !isInitialized))
-            
             Button("Resurface mode") {
                 ClickioConsentSDK.shared.openDialog(mode: .resurface, attNeeded: true)
             }
@@ -74,14 +70,14 @@ struct ConsentView: View {
             Button(action: {
                 showClearDataAlert = true
             }) {
-                Text("Clear Cached Data")
+                Text("Clear Data")
                     .foregroundColor(.white)
                     .padding()
                     .frame(maxWidth: .infinity)
                     .background(Color.red)
                     .cornerRadius(10)
             }
-            .alert("Clear Cached Data", isPresented: $showClearDataAlert) {
+            .alert("Clear Data", isPresented: $showClearDataAlert) {
                 Button("Cancel", role: .cancel) { }
                 Button("Clear", role: .destructive) {
                     clearUserDefaults()
@@ -107,13 +103,13 @@ struct ConsentView: View {
         // register callbacks before initialization
         ClickioConsentSDK.shared.onReady {
             DispatchQueue.main.async {
-                guard !self.isInitialized else { return }
-                self.isInitialized = true
-                
-                // now that SDK is ready, open CMP if needed
-                if showDefaultCMPOnLaunch {
-                    print("ConsentView: SDK ready → opening default CMP")
-                    ClickioConsentSDK.shared.openDialog(mode: .default, attNeeded: true)
+                // check if possible to show ads
+                self.checkIfCanShowAds()
+                if !self.isInitialized {
+                    self.isInitialized = true
+                    if showDefaultCMPOnLaunch {
+                        ClickioConsentSDK.shared.openDialog(mode: .default, attNeeded: true)
+                    }
                 }
             }
         }
@@ -130,25 +126,18 @@ struct ConsentView: View {
     }
     
     private func handleConsentStateChange() {
-        // Check consent state
-        if let consentState = ClickioConsentSDK.shared.checkConsentState() {
-            print("ConsentView: Current consent state = \(consentState)")
-            if consentState != .gdprNoDecision {
-                print("ConsentView: Consent state allows ads, initializing Google Mobile Ads if needed")
-                // If consent is in allowed states, load ads
-                shouldShowAdsBanner = true
-                    MobileAds.shared.start(completionHandler: nil)
-                    shouldShowAdsBanner = true
-            } else {
-                print("ConsentView: Consent state does not allow ads, stopping ads")
-                // If consent is not in allowed states, stop loading ads
-                shouldShowAdsBanner = false
-            }
-        } else {
-            print("ConsentView: Unable to get consent state")
-            shouldShowAdsBanner = false
-        }
+        checkIfCanShowAds()
         refreshConsentData()
+    }
+    
+    private func checkIfCanShowAds() {
+        if let state = ClickioConsentSDK.shared.checkConsentState(), state != .gdprNoDecision {
+            print("ConsentView: Consent state allows ads, showing Google Ads if needed")
+            self.shouldShowAdsBanner = true
+        } else {
+            print("ConsentView: Consent state does not allow ads, stopping Google ads")
+            self.shouldShowAdsBanner = false
+        }
     }
     
     // Default "Unknown" values for list initialization

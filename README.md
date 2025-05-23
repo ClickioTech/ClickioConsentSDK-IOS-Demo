@@ -7,9 +7,10 @@ This sample app demonstrates how to integrate the  [Clickio Consent SDK](https:/
 In particular, it shows how to:
 
 -   Initialize the SDK with your site configuration
--   Show a consent dialog
+-   Show a consent dialog in default mode
 -   Open the dialog again manually in resurface mode
 -   Display all received consent data on button click or consent update
+-   Show Google Ads if needed
 
 ## Setup & Run
 
@@ -56,9 +57,8 @@ override func viewDidLoad() {
 ClickioConsentSDK.shared.openDialog(
 mode: .resurface,
 in: self, // use this parameter in UIKit projects to explicitly specify on which UIViewController the dialog will be presented. Don't use this parameter in SwiftUI projects.
-showATTFirst: true,
 attNeeded: true
-)
+  )
 }
 ```
 -   The  `241131`  in the line  `config = ClickioConsentSDK.Config("241131", "en")`  can be replaced with your own site identifier provided by Clickio.
@@ -94,7 +94,6 @@ private let config = ClickioConsentSDK.Config(siteId: "241131", appLanguage: "en
 Button("Open Consent Dialog") {
   ClickioConsentSDK.shared.openDialog(
     mode: .resurface,
-    showATTFirst: true,
     attNeeded: true
   )
 }

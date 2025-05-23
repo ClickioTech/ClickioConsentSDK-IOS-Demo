@@ -48,7 +48,6 @@ final class ConsentViewController: UIViewController {
     private let tableView = UITableView()
     private let verboseLoggingSwitch = UISwitch()
     private let verboseLoggingKey = "enableVerboseLogging"
-    private let defaultModeButton = UIButton(type: .system)
     private let resurfaceModeButton = UIButton(type: .system)
     private let refreshButton = UIButton(type: .system)
     private let clearDataButton = UIButton(type: .system)
@@ -87,118 +86,41 @@ final class ConsentViewController: UIViewController {
     }
 
     private func showDefaultCMPIfNeeded() {
-        ClickioConsentSDK.shared.openDialog(mode: .default, in: self, attNeeded: true)
-    }
-
-    // MARK: - Setup UI
-    private func setupUI() {
-      // Controls Stack
-      let verboseLabel = UILabel()
-      verboseLabel.text = "Enable Verbose Logging"
-      let verboseStack = UIStackView(arrangedSubviews: [verboseLabel, verboseLoggingSwitch])
-      verboseStack.axis = .horizontal
-      verboseStack.spacing = 8
-      verboseStack.translatesAutoresizingMaskIntoConstraints = false
-
-      [defaultModeButton, resurfaceModeButton, refreshButton, clearDataButton].forEach { btn in
-        btn.backgroundColor = .systemBlue
-        btn.setTitleColor(.white, for: .normal)
-        btn.layer.cornerRadius = 8
-        btn.translatesAutoresizingMaskIntoConstraints = false
-        btn.heightAnchor.constraint(equalToConstant: 44).isActive = true
-      }
-      defaultModeButton.setTitle("Default Mode", for: .normal)
-      resurfaceModeButton.setTitle("Resurface Mode", for: .normal)
-      refreshButton.setTitle("Refresh Consent Data", for: .normal)
-      clearDataButton.setTitle("Clear Cached Data", for: .normal)
-
-      defaultModeButton.addTarget(self, action: #selector(openDefaultConsent), for: .touchUpInside)
-      resurfaceModeButton.addTarget(self, action: #selector(openResurfaceConsent), for: .touchUpInside)
-      refreshButton.addTarget(self, action: #selector(getConsentData), for: .touchUpInside)
-      clearDataButton.addTarget(self, action: #selector(clearUserDefaults), for: .touchUpInside)
-      verboseLoggingSwitch.addTarget(self, action: #selector(toggleVerboseLogging), for: .valueChanged)
-
-      // TableView
-      tableView.dataSource = self
-      tableView.translatesAutoresizingMaskIntoConstraints = false
-      tableView.register(ConsentCell.self, forCellReuseIdentifier: ConsentCell.reuseID)
-
-      let controlsStack = UIStackView(arrangedSubviews: [
-        verboseStack,
-        defaultModeButton,
-        resurfaceModeButton,
-        refreshButton,
-        clearDataButton
-      ])
-      controlsStack.axis = .vertical
-      controlsStack.spacing = 12
-      controlsStack.translatesAutoresizingMaskIntoConstraints = false
-
-      view.addSubview(controlsStack)
-      view.addSubview(tableView)
-
-      // Banner VC setup (hidden initially)
-      let bannerVC = BannerViewController()
-      addChild(bannerVC)
-      bannerVC.view.translatesAutoresizingMaskIntoConstraints = false
-      bannerVC.view.isHidden = true
-      view.addSubview(bannerVC.view)
-      bannerVC.didMove(toParent: self)
-      bannerViewController = bannerVC
-
-      NSLayoutConstraint.activate([
-        controlsStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-        controlsStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-        controlsStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-
-        tableView.topAnchor.constraint(equalTo: controlsStack.bottomAnchor, constant: 16),
-        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-      ])
-
-      let bannerView = bannerVC.view!
-      bannerTop = bannerView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 16)
-      bannerHeight = bannerView.heightAnchor.constraint(equalToConstant: AdSizeBanner.size.height + 50)
-      bannerBottom = bannerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
-        
-        NSLayoutConstraint.activate([
-            bannerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            bannerView.widthAnchor.constraint(equalToConstant: AdSizeBanner.size.width)
-        ])
-        
-        tableViewBottomToSafeArea = tableView
-            .bottomAnchor
-            .constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        tableViewBottomToBannerTop = tableView
-            .bottomAnchor
-            .constraint(equalTo: bannerView.topAnchor, constant: -16)
-        
-        // default state for table without banner
-        tableViewBottomToSafeArea.isActive = true
-        tableViewBottomToBannerTop.isActive = false
+        ClickioConsentSDK.shared.openDialog(
+            mode: .default,
+            in: self,
+            attNeeded: true
+        )
     }
     
     // MARK: - SDK Setup
     private func setupConsentSDK() {
         ClickioConsentSDK.shared.setLogsMode(verboseLoggingSwitch.isOn ? .verbose : .disabled)
         ClickioConsentSDK.shared.onReady { [weak self] in
-            self?.defaultModeButton.isEnabled = true
             self?.resurfaceModeButton.isEnabled = true
             self?.refreshButton.isEnabled = true
             self?.clearDataButton.isEnabled = true
+            self?.checkIfCanShowAds()
         }
         ClickioConsentSDK.shared.onConsentUpdated { [weak self] in
             guard let self = self else { return }
-            if let state = ClickioConsentSDK.shared.checkConsentState(), state != .gdprNoDecision {
-                self.shouldShowAdsBanner = true
-            } else {
-                self.shouldShowAdsBanner = false
-            }
+            checkIfCanShowAds()
             self.getConsentData()
         }
         Task { await ClickioConsentSDK.shared.initialize(configuration: config) }
     }
-
+    
+    // MARK: - Google Ads Check
+    private func checkIfCanShowAds() {
+        if let state = ClickioConsentSDK.shared.checkConsentState(), state != .gdprNoDecision {
+            print("ConsentView: Consent state allows ads, showing Google Ads if needed")
+            self.shouldShowAdsBanner = true
+        } else {
+            print("ConsentView: Consent state does not allow ads, stopping Google ads")
+            self.shouldShowAdsBanner = false
+        }
+    }
+    
     // MARK: - Actions
     @objc private func toggleVerboseLogging() {
         let isOn = verboseLoggingSwitch.isOn
@@ -207,11 +129,20 @@ final class ConsentViewController: UIViewController {
     }
     
     @objc private func openDefaultConsent() {
-        ClickioConsentSDK.shared.openDialog(mode: .default, in: self, attNeeded: true)
+        let consentState = ClickioConsentSDK.shared.checkConsentState()
+        ClickioConsentSDK.shared.openDialog(
+            mode: .default,
+            in: self,
+            attNeeded: true
+        )
     }
     
     @objc private func openResurfaceConsent() {
-        ClickioConsentSDK.shared.openDialog(mode: .resurface, in: self, attNeeded: true)
+        ClickioConsentSDK.shared.openDialog(
+            mode: .resurface,
+            in: self,
+            attNeeded: true
+        )
     }
     
     @objc private func getConsentData() {
@@ -269,6 +200,92 @@ final class ConsentViewController: UIViewController {
             UserDefaults.standard.synchronize()
             getConsentData()
         }
+    }
+    
+    // MARK: - Setup UI
+    private func setupUI() {
+        // Controls Stack
+        let verboseLabel = UILabel()
+        verboseLabel.text = "Enable Verbose Logging"
+        let verboseStack = UIStackView(arrangedSubviews: [verboseLabel, verboseLoggingSwitch])
+        verboseStack.axis = .horizontal
+        verboseStack.spacing = 8
+        verboseStack.translatesAutoresizingMaskIntoConstraints = false
+        
+        [resurfaceModeButton, refreshButton, clearDataButton].forEach { btn in
+            btn.backgroundColor = .systemBlue
+            btn.setTitleColor(.white, for: .normal)
+            btn.layer.cornerRadius = 8
+            btn.translatesAutoresizingMaskIntoConstraints = false
+            btn.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        }
+        
+        resurfaceModeButton.setTitle("Resurface Mode", for: .normal)
+        refreshButton.setTitle("Refresh Consent Data", for: .normal)
+        clearDataButton.setTitle("Clear Data", for: .normal)
+        
+        resurfaceModeButton.addTarget(self, action: #selector(openResurfaceConsent), for: .touchUpInside)
+        refreshButton.addTarget(self, action: #selector(getConsentData), for: .touchUpInside)
+        clearDataButton.addTarget(self, action: #selector(clearUserDefaults), for: .touchUpInside)
+        verboseLoggingSwitch.addTarget(self, action: #selector(toggleVerboseLogging), for: .valueChanged)
+        
+        // TableView
+        tableView.dataSource = self
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.register(ConsentCell.self, forCellReuseIdentifier: ConsentCell.reuseID)
+        
+        let controlsStack = UIStackView(arrangedSubviews: [
+            verboseStack,
+            resurfaceModeButton,
+            refreshButton,
+            clearDataButton
+        ])
+        controlsStack.axis = .vertical
+        controlsStack.spacing = 12
+        controlsStack.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(controlsStack)
+        view.addSubview(tableView)
+        
+        // Banner VC setup (hidden initially)
+        let bannerVC = BannerViewController()
+        addChild(bannerVC)
+        bannerVC.view.translatesAutoresizingMaskIntoConstraints = false
+        bannerVC.view.isHidden = true
+        view.addSubview(bannerVC.view)
+        bannerVC.didMove(toParent: self)
+        bannerViewController = bannerVC
+        
+        NSLayoutConstraint.activate([
+            controlsStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            controlsStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            controlsStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            tableView.topAnchor.constraint(equalTo: controlsStack.bottomAnchor, constant: 16),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+        
+        let bannerView = bannerVC.view!
+        bannerTop = bannerView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 16)
+        bannerHeight = bannerView.heightAnchor.constraint(equalToConstant: AdSizeBanner.size.height + 50)
+        bannerBottom = bannerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
+        
+        NSLayoutConstraint.activate([
+            bannerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            bannerView.widthAnchor.constraint(equalToConstant: AdSizeBanner.size.width)
+        ])
+        
+        tableViewBottomToSafeArea = tableView
+            .bottomAnchor
+            .constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        tableViewBottomToBannerTop = tableView
+            .bottomAnchor
+            .constraint(equalTo: bannerView.topAnchor, constant: -16)
+        
+        // default state for table without banner
+        tableViewBottomToSafeArea.isActive = true
+        tableViewBottomToBannerTop.isActive = false
     }
 }
 
