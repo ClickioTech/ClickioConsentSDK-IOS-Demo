@@ -70,9 +70,8 @@ final class ConsentViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        let savedLoggingMode = UserDefaults.standard.bool(forKey: verboseLoggingKey)
-        verboseLoggingSwitch.isOn = savedLoggingMode
-        ClickioConsentSDK.shared.setLogsMode(savedLoggingMode ? .verbose : .disabled)
+        
+        loggerSwitcherSetup()
         setupUI()
         setupConsentSDK()
         consentData = defaultConsentData()
@@ -95,7 +94,6 @@ final class ConsentViewController: UIViewController {
     
     // MARK: - SDK Setup
     private func setupConsentSDK() {
-        ClickioConsentSDK.shared.setLogsMode(verboseLoggingSwitch.isOn ? .verbose : .disabled)
         ClickioConsentSDK.shared.onReady { [weak self] in
             self?.resurfaceModeButton.isEnabled = true
             self?.refreshButton.isEnabled = true
@@ -107,17 +105,23 @@ final class ConsentViewController: UIViewController {
             checkIfCanShowAds()
             self.getConsentData()
         }
-        Task { await ClickioConsentSDK.shared.initialize(configuration: config) }
+        Task {
+            await ClickioConsentSDK.shared.initialize(configuration: config) }
     }
     
     // MARK: - Google Ads Check
     private func checkIfCanShowAds() {
-        if let state = ClickioConsentSDK.shared.checkConsentState(), state != .gdprNoDecision {
+        guard let state = ClickioConsentSDK.shared.checkConsentState(),
+              state != .gdprNoDecision else {
+            if shouldShowAdsBanner {
+                shouldShowAdsBanner = false
+            }
+            return
+        }
+        
+        if !shouldShowAdsBanner {
             print("ConsentView: Consent state allows ads, showing Google Ads if needed")
-            self.shouldShowAdsBanner = true
-        } else {
-            print("ConsentView: Consent state does not allow ads, stopping Google ads")
-            self.shouldShowAdsBanner = false
+            shouldShowAdsBanner = true
         }
     }
     
@@ -126,15 +130,6 @@ final class ConsentViewController: UIViewController {
         let isOn = verboseLoggingSwitch.isOn
         UserDefaults.standard.set(isOn, forKey: verboseLoggingKey)
         ClickioConsentSDK.shared.setLogsMode(verboseLoggingSwitch.isOn ? .verbose : .disabled)
-    }
-    
-    @objc private func openDefaultConsent() {
-        let consentState = ClickioConsentSDK.shared.checkConsentState()
-        ClickioConsentSDK.shared.openDialog(
-            mode: .default,
-            in: self,
-            attNeeded: true
-        )
     }
     
     @objc private func openResurfaceConsent() {
@@ -200,6 +195,19 @@ final class ConsentViewController: UIViewController {
             UserDefaults.standard.synchronize()
             getConsentData()
         }
+    }
+    
+    // MARK: - LoggerSwitcher setup
+    private func loggerSwitcherSetup() {
+        let hasSetVerbose = UserDefaults.standard.object(forKey: verboseLoggingKey) != nil
+
+           if !hasSetVerbose {
+               UserDefaults.standard.set(true, forKey: verboseLoggingKey)
+           }
+
+           let savedLoggingMode = UserDefaults.standard.bool(forKey: verboseLoggingKey)
+           verboseLoggingSwitch.isOn = savedLoggingMode
+           ClickioConsentSDK.shared.setLogsMode(savedLoggingMode ? .verbose : .disabled)
     }
     
     // MARK: - Setup UI

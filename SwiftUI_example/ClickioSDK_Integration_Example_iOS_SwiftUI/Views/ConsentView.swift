@@ -131,12 +131,17 @@ struct ConsentView: View {
     }
     
     private func checkIfCanShowAds() {
-        if let state = ClickioConsentSDK.shared.checkConsentState(), state != .gdprNoDecision {
+        guard let state = ClickioConsentSDK.shared.checkConsentState(),
+              state != .gdprNoDecision else {
+            if shouldShowAdsBanner {
+                shouldShowAdsBanner = false
+            }
+            return
+        }
+        
+        if !shouldShowAdsBanner {
             print("ConsentView: Consent state allows ads, showing Google Ads if needed")
-            self.shouldShowAdsBanner = true
-        } else {
-            print("ConsentView: Consent state does not allow ads, stopping Google ads")
-            self.shouldShowAdsBanner = false
+            shouldShowAdsBanner = true
         }
     }
     
