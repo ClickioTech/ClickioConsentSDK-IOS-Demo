@@ -98,6 +98,7 @@ final class ConsentViewController: UIViewController {
             self?.resurfaceModeButton.isEnabled = true
             self?.refreshButton.isEnabled = true
             self?.clearDataButton.isEnabled = true
+            self?.getConsentData()
             self?.checkIfCanShowAds()
         }
         ClickioConsentSDK.shared.onConsentUpdated { [weak self] in

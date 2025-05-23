@@ -63,7 +63,7 @@ struct ConsentView: View {
             .buttonStyle(PrimaryButtonStyle(disabled: !isInitialized))
             
             Button("Refresh Consent Data") {
-                refreshConsentData()
+                getConsentData()
             }
             .buttonStyle(SecondaryButtonStyle())
             
@@ -103,6 +103,7 @@ struct ConsentView: View {
         // register callbacks before initialization
         ClickioConsentSDK.shared.onReady {
             DispatchQueue.main.async {
+                getConsentData()
                 // check if possible to show ads
                 self.checkIfCanShowAds()
                 if !self.isInitialized {
@@ -127,7 +128,7 @@ struct ConsentView: View {
     
     private func handleConsentStateChange() {
         checkIfCanShowAds()
-        refreshConsentData()
+        getConsentData()
     }
     
     private func checkIfCanShowAds() {
@@ -169,7 +170,7 @@ struct ConsentView: View {
     }
     
     // Update consent data values for list
-    private func refreshConsentData() {
+    private func getConsentData() {
         let consentSDK = ClickioConsentSDK.shared
         let exportData = ExportData()
         
@@ -222,7 +223,7 @@ struct ConsentView: View {
             print("UserDefaults storage cleared for bundle: \(bundleID)")
             showDefaultCMPOnLaunch = false
             // Refresh consent data after clearing
-            refreshConsentData()
+            getConsentData()
         }
     }
 }
