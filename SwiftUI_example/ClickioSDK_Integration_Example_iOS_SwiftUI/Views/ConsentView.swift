@@ -27,7 +27,6 @@ struct ConsentView: View {
             VStack(spacing: 20) {
                 buttonsSection
                 consentList
-                // MARK: НЕ СРАБАТЫВАЕТ БРЕЙКПОИНТ ПРИ ПОВТОРНОМ ЗАПУСКЕ
                 if shouldShowAdsBanner {
                     BannerAdView(adUnitID: "/21775744923/example/fixed-size-banner", shouldLoadAds: shouldShowAdsBanner)
                         .frame(height: 100)
