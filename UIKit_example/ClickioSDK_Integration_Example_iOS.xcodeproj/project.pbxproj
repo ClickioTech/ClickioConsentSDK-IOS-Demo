@@ -17,7 +17,10 @@
 		C443658D2DDC855100A5C1EA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C443657A2DDC855100A5C1EA /* Assets.xcassets */; };
 		C443658E2DDC855100A5C1EA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C44365832DDC855100A5C1EA /* Main.storyboard */; };
 		C44365922DDC8ACD00A5C1EA /* ConsentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44365912DDC8ACD00A5C1EA /* ConsentCell.swift */; };
+		C44365B62DDCE8A600A5C1EA /* ClickioConsentSDKManager in Frameworks */ = {isa = PBXBuildFile; productRef = C44365B52DDCE8A600A5C1EA /* ClickioConsentSDKManager */; };
 		C4A815172DD4FAB20013F8D2 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = C4A815162DD4FAB20013F8D2 /* GoogleMobileAds */; };
+		C4D16E582DE8B2C800B3BD24 /* ClickioConsentSDKManager in Frameworks */ = {isa = PBXBuildFile; productRef = C4D16E572DE8B2C800B3BD24 /* ClickioConsentSDKManager */; };
+		C4D16E5B2DE8B2E000B3BD24 /* ClickioConsentSDKManager in Frameworks */ = {isa = PBXBuildFile; productRef = C4D16E5A2DE8B2E000B3BD24 /* ClickioConsentSDKManager */; };
 		C4EE07182DB7F63C00AA8A5F /* ClickioConsentSDKManager in Frameworks */ = {isa = PBXBuildFile; productRef = C4EE07172DB7F63C00AA8A5F /* ClickioConsentSDKManager */; };
 		C4FF59172DBC48650061DB39 /* ClickioConsentSDKManager in Frameworks */ = {isa = PBXBuildFile; productRef = C4FF59162DBC48650061DB39 /* ClickioConsentSDKManager */; };
 /* End PBXBuildFile section */
@@ -47,7 +50,7 @@
 		C44365822DDC855100A5C1EA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C44365842DDC855100A5C1EA /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		C44365912DDC8ACD00A5C1EA /* ConsentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentCell.swift; sourceTree = "<group>"; };
-		C443659E2DDCC1D400A5C1EA /* ClickioSDK_Integration_Example_iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClickioSDK_Integration_Example_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4D16E552DE8B29A00B3BD24 /* ClickioSDK_Integration_Example_iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClickioSDK_Integration_Example_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,8 +59,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				C4A815172DD4FAB20013F8D2 /* GoogleMobileAds in Frameworks */,
+				C4D16E5B2DE8B2E000B3BD24 /* ClickioConsentSDKManager in Frameworks */,
+				C44365B62DDCE8A600A5C1EA /* ClickioConsentSDKManager in Frameworks */,
 				C4EE07182DB7F63C00AA8A5F /* ClickioConsentSDKManager in Frameworks */,
 				C4FF59172DBC48650061DB39 /* ClickioConsentSDKManager in Frameworks */,
+				C4D16E582DE8B2C800B3BD24 /* ClickioConsentSDKManager in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,7 +124,7 @@
 			isa = PBXGroup;
 			children = (
 				C44365852DDC855100A5C1EA /* ClickioSDK_Integration_Example_iOS */,
-				C443659E2DDCC1D400A5C1EA /* ClickioSDK_Integration_Example_iOS.app */,
+				C4D16E552DE8B29A00B3BD24 /* ClickioSDK_Integration_Example_iOS.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -140,7 +146,7 @@
 			);
 			name = ClickioSDK_Integration_Example_iOS;
 			productName = TestClickioConsentSDKApp;
-			productReference = C443659E2DDCC1D400A5C1EA /* ClickioSDK_Integration_Example_iOS.app */;
+			productReference = C4D16E552DE8B29A00B3BD24 /* ClickioSDK_Integration_Example_iOS.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -168,8 +174,8 @@
 			mainGroup = C49473B82D724DF900949C57;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				C4FF59152DBC48650061DB39 /* XCRemoteSwiftPackageReference "ClickioConsentSDK-IOS" */,
 				C4A815152DD4FAB20013F8D2 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+				C4D16E592DE8B2E000B3BD24 /* XCRemoteSwiftPackageReference "ClickioConsentSDK-IOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C49473B82D724DF900949C57;
@@ -454,6 +460,14 @@
 				minimumVersion = 12.3.0;
 			};
 		};
+		C4D16E592DE8B2E000B3BD24 /* XCRemoteSwiftPackageReference "ClickioConsentSDK-IOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ClickioTech/ClickioConsentSDK-IOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.5;
+			};
+		};
 		C4EE07162DB7F63C00AA8A5F /* XCRemoteSwiftPackageReference "ClickioConsentSDK-IOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ClickioTech/ClickioConsentSDK-IOS";
@@ -473,10 +487,23 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		C44365B52DDCE8A600A5C1EA /* ClickioConsentSDKManager */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ClickioConsentSDKManager;
+		};
 		C4A815162DD4FAB20013F8D2 /* GoogleMobileAds */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C4A815152DD4FAB20013F8D2 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
 			productName = GoogleMobileAds;
+		};
+		C4D16E572DE8B2C800B3BD24 /* ClickioConsentSDKManager */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ClickioConsentSDKManager;
+		};
+		C4D16E5A2DE8B2E000B3BD24 /* ClickioConsentSDKManager */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C4D16E592DE8B2E000B3BD24 /* XCRemoteSwiftPackageReference "ClickioConsentSDK-IOS" */;
+			productName = ClickioConsentSDKManager;
 		};
 		C4EE07172DB7F63C00AA8A5F /* ClickioConsentSDKManager */ = {
 			isa = XCSwiftPackageProductDependency;

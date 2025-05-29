@@ -10,6 +10,7 @@ import GoogleMobileAds
 // MARK: - ConsentView
 struct ConsentView: View {
     // MARK: Properties
+    @State private var lastConsentState: ClickioConsentSDK.ConsentState? = .gdprNoDecision
     @State private var consentData: [ConsentDataItem] = ConsentView.defaultConsentData()
     @State private var isInitialized = false
     @State private var shouldShowAdsBanner = false
@@ -130,19 +131,29 @@ struct ConsentView: View {
         getConsentData()
     }
     
+    // MARK: Google Ads Check
     private func checkIfCanShowAds() {
-        guard let state = ClickioConsentSDK.shared.checkConsentState(),
-              state != .gdprNoDecision else {
-            if shouldShowAdsBanner {
-                shouldShowAdsBanner = false
-            }
+        guard let state = ClickioConsentSDK.shared.checkConsentState() else {
+            // no information about user decision available — do nothing
             return
         }
-        
-        if !shouldShowAdsBanner {
-            print("ConsentView: Consent state allows ads, showing Google Ads if needed")
-            shouldShowAdsBanner = true
+        // if we still have “no decision”, remember it and exit
+        if state == .gdprNoDecision {
+            lastConsentState = state
+            return
         }
+        // at this point state != .gdprNoDecision
+        
+        // ensure we’re actually transitioning from “noDecision” to (“gdprDecisionObtained” or other states)
+        guard lastConsentState == .gdprNoDecision else {
+            // if we were already in another state, do nothing
+            return
+        }
+        // this block will run exactly once upon the first transition
+        lastConsentState = state
+        
+        print("ConsentView: Consent state allows ads, showing Google Ads")
+        shouldShowAdsBanner = true
     }
     
     // Default "Unknown" values for list initialization

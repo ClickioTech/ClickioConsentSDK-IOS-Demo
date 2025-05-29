@@ -11,6 +11,7 @@ import GoogleMobileAds
 // MARK: - ConsentViewController
 final class ConsentViewController: UIViewController {
     // MARK: Properties
+    private var lastConsentState: ClickioConsentSDK.ConsentState? = .gdprNoDecision
     private var showDefaultCMPOnLaunch = true
     private var shouldShowAdsBanner = false {
         didSet {
@@ -107,23 +108,33 @@ final class ConsentViewController: UIViewController {
             self.getConsentData()
         }
         Task {
-            await ClickioConsentSDK.shared.initialize(configuration: config) }
+            await ClickioConsentSDK.shared.initialize(configuration: config)
+        }
     }
     
     // MARK: - Google Ads Check
     private func checkIfCanShowAds() {
-        guard let state = ClickioConsentSDK.shared.checkConsentState(),
-              state != .gdprNoDecision else {
-            if shouldShowAdsBanner {
-                shouldShowAdsBanner = false
-            }
+        guard let state = ClickioConsentSDK.shared.checkConsentState() else {
+            // no information about user decision available — do nothing
             return
         }
-        
-        if !shouldShowAdsBanner {
-            print("ConsentView: Consent state allows ads, showing Google Ads if needed")
-            shouldShowAdsBanner = true
+        // if we still have “no decision”, remember it and exit
+        if state == .gdprNoDecision {
+            lastConsentState = state
+            return
         }
+        // at this point state != .gdprNoDecision
+        
+        // ensure we’re actually transitioning from “noDecision” to (“gdprDecisionObtained” or other states)
+        guard lastConsentState == .gdprNoDecision else {
+            // if we were already in another state, do nothing
+            return
+        }
+        // this block will run exactly once upon the first transition
+        lastConsentState = state
+        
+        print("ConsentView: Consent state allows ads, showing Google Ads")
+        shouldShowAdsBanner = true
     }
     
     // MARK: - Actions

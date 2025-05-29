@@ -1,13 +1,13 @@
 {
-  "originHash" : "f588d4596c502568884ab3e9891c0f19ad15d85fc1f988e94e2e87bbaf1798e0",
+  "originHash" : "aea28319beefbd98c74c3dae8e86d595a15cda101b8009e72a1083d4343fb92e",
   "pins" : [
     {
       "identity" : "clickioconsentsdk-ios",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ClickioTech/ClickioConsentSDK-IOS",
       "state" : {
-        "revision" : "eeeb0637a62baf4342788160ebc61241e1f16252",
-        "version" : "1.0.4"
+        "revision" : "f5975f1d95425d86cee55fea42d054c9dfe6d20e",
+        "version" : "1.0.5"
       }
     },
     {
