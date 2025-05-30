@@ -231,7 +231,6 @@ struct ConsentView: View {
             UserDefaults.standard.removePersistentDomain(forName: bundleID)
             UserDefaults.standard.synchronize()
             print("UserDefaults storage cleared for bundle: \(bundleID)")
-            showDefaultCMPOnLaunch = false
             // Refresh consent data after clearing
             getConsentData()
         }
