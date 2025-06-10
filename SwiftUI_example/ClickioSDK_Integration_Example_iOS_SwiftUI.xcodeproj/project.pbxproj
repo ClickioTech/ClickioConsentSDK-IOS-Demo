@@ -7,11 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		49ADCD502DBFED6F007F3B2F /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 49ADCD4F2DBFED6F007F3B2F /* GoogleMobileAds */; };
 		C4EE07392DB7F79200AA8A5F /* ClickioConsentSDKManager in Frameworks */ = {isa = PBXBuildFile; productRef = C4EE07382DB7F79200AA8A5F /* ClickioConsentSDKManager */; };
 		C4FF59022DBC48520061DB39 /* ClickioConsentSDKManager in Frameworks */ = {isa = PBXBuildFile; productRef = C4FF59012DBC48520061DB39 /* ClickioConsentSDKManager */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		49EF1E9F2DC10AF500D0721A /* ClickioSDK-Integration-Example-iOS-SwiftUI-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ClickioSDK-Integration-Example-iOS-SwiftUI-Info.plist"; sourceTree = "<group>"; };
 		C45E213D2D91F49D00EF5F09 /* ClickioSDK_Integration_Example_iOS_SwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClickioSDK_Integration_Example_iOS_SwiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -28,6 +30,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49ADCD502DBFED6F007F3B2F /* GoogleMobileAds in Frameworks */,
 				C4EE07392DB7F79200AA8A5F /* ClickioConsentSDKManager in Frameworks */,
 				C4FF59022DBC48520061DB39 /* ClickioConsentSDKManager in Frameworks */,
 			);
@@ -39,6 +42,7 @@
 		C45E21342D91F49D00EF5F09 = {
 			isa = PBXGroup;
 			children = (
+				49EF1E9F2DC10AF500D0721A /* ClickioSDK-Integration-Example-iOS-SwiftUI-Info.plist */,
 				C45E213F2D91F49D00EF5F09 /* ClickioSDK_Integration_Example_iOS_SwiftUI */,
 				C45E213E2D91F49D00EF5F09 /* Products */,
 			);
@@ -101,6 +105,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				C4FF59002DBC48520061DB39 /* XCRemoteSwiftPackageReference "ClickioConsentSDK-IOS" */,
+				49ADCD4E2DBFED6F007F3B2F /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C45E213E2D91F49D00EF5F09 /* Products */;
@@ -262,15 +267,17 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ClickioSDK_Integration_Example_iOS_SwiftUI/Preview Content\"";
+				DEVELOPMENT_TEAM = Y7A68LL9ZH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "ClickioSDK-Integration-Example-iOS-SwiftUI-Info.plist";
 				INFOPLIST_KEY_NSUserTrackingUsageDescription = "This is a test ATT Permission request.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -296,15 +303,17 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ClickioSDK_Integration_Example_iOS_SwiftUI/Preview Content\"";
+				DEVELOPMENT_TEAM = Y7A68LL9ZH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "ClickioSDK-Integration-Example-iOS-SwiftUI-Info.plist";
 				INFOPLIST_KEY_NSUserTrackingUsageDescription = "This is a test ATT Permission request.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -346,6 +355,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		49ADCD4E2DBFED6F007F3B2F /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.3.0;
+			};
+		};
 		C4EE07372DB7F79200AA8A5F /* XCRemoteSwiftPackageReference "ClickioConsentSDK-IOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ClickioTech/ClickioConsentSDK-IOS";
@@ -359,12 +376,17 @@
 			repositoryURL = "https://github.com/ClickioTech/ClickioConsentSDK-IOS";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.2;
+				minimumVersion = 1.0.5;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		49ADCD4F2DBFED6F007F3B2F /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 49ADCD4E2DBFED6F007F3B2F /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
 		C4EE07382DB7F79200AA8A5F /* ClickioConsentSDKManager */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C4EE07372DB7F79200AA8A5F /* XCRemoteSwiftPackageReference "ClickioConsentSDK-IOS" */;

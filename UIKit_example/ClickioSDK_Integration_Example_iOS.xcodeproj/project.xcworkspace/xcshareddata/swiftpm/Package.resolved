@@ -1,13 +1,31 @@
 {
-  "originHash" : "e2e0c3445b8f5fffa66b042cdf5e9d19b4166b72e57f632d5b49ba7726ac1093",
+  "originHash" : "aea28319beefbd98c74c3dae8e86d595a15cda101b8009e72a1083d4343fb92e",
   "pins" : [
     {
       "identity" : "clickioconsentsdk-ios",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ClickioTech/ClickioConsentSDK-IOS",
       "state" : {
-        "revision" : "853f787a55bc21f19e24c935f3c8dd753102f92e",
-        "version" : "1.0.2"
+        "revision" : "f5975f1d95425d86cee55fea42d054c9dfe6d20e",
+        "version" : "1.0.5"
+      }
+    },
+    {
+      "identity" : "swift-package-manager-google-mobile-ads",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/googleads/swift-package-manager-google-mobile-ads",
+      "state" : {
+        "revision" : "1f4e2201d986617a834326ad481be747ab481570",
+        "version" : "12.4.0"
+      }
+    },
+    {
+      "identity" : "swift-package-manager-google-user-messaging-platform",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/googleads/swift-package-manager-google-user-messaging-platform.git",
+      "state" : {
+        "revision" : "69b53394c5258b3fe688e625a998047d1f393497",
+        "version" : "3.0.0"
       }
     }
   ],
