@@ -65,7 +65,7 @@ final class ConsentViewController: UIViewController {
     private var consentData: [ConsentDataItem] = []
 
     // SDK Config
-    private let config = ClickioConsentSDK.Config(siteId: "241131", appLanguage: "en")
+    private let config = ClickioConsentSDK.Config(siteId: "241131", appLanguage: "en") // Replace "241131" with your own Site ID
 
     // MARK: Methods
     override func viewDidLoad() {
