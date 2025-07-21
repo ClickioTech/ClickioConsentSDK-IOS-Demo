@@ -174,7 +174,15 @@ final class ConsentViewController: UIViewController {
         let consentedNonTcfPurposes = exportData.getConsentedNonTcfPurposes()?.description ?? "Unknown"
         
         let googleConsentMode = exportData.getGoogleConsentMode()
-        let googleConsentString = "Analytics Storage: \(googleConsentMode?.analyticsStorageGranted ?? false), Ad Storage: \(googleConsentMode?.adStorageGranted ?? false), Ad User Data: \(googleConsentMode?.adUserDataGranted ?? false), Ad Personalization: \(googleConsentMode?.adPersonalizationGranted ?? false)"
+        let googleConsentString = """
+        Analytics Storage: \(googleConsentMode?.analyticsStorageGranted ?? false)
+        Ad Storage: \(googleConsentMode?.adStorageGranted ?? false)
+        Ad User Data: \(googleConsentMode?.adUserDataGranted ?? false)
+        Ad Personalization: \(googleConsentMode?.adPersonalizationGranted ?? false)
+        Functionality Storage: \(googleConsentMode?.functionalityStorageGranted ?? false)
+        Personalization Storage: \(googleConsentMode?.personalizationStorageGranted ?? false)
+        Security Storage: \(googleConsentMode?.securityStorageGranted ?? false)
+        """
         
         consentData = [
             ConsentDataItem(title: "checkConsentScope", value: consentScope),
