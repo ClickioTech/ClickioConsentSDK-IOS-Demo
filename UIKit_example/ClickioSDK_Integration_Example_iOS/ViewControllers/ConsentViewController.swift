@@ -50,6 +50,8 @@ final class ConsentViewController: UIViewController {
     private let verboseLoggingSwitch = UISwitch()
     private let verboseLoggingKey = "enableVerboseLogging"
     private let resurfaceModeButton = UIButton(type: .system)
+    private let customWebViewButton = UIButton(type: .system)
+    private let clearLocalStorageForWebView = UIButton(type: .system)
     private let refreshButton = UIButton(type: .system)
     private let clearDataButton = UIButton(type: .system)
     private var bannerViewController: BannerViewController?
@@ -80,9 +82,9 @@ final class ConsentViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if showDefaultCMPOnLaunch {
-            showDefaultCMPIfNeeded()
-        }
+//        if showDefaultCMPOnLaunch {
+//            showDefaultCMPIfNeeded()
+//        }
     }
 
     private func showDefaultCMPIfNeeded() {
@@ -97,6 +99,8 @@ final class ConsentViewController: UIViewController {
     private func setupConsentSDK() {
         ClickioConsentSDK.shared.onReady { [weak self] in
             self?.resurfaceModeButton.isEnabled = true
+            self?.customWebViewButton.isEnabled = true
+            self?.clearLocalStorageForWebView.isEnabled = true
             self?.refreshButton.isEnabled = true
             self?.clearDataButton.isEnabled = true
             self?.getConsentData()
@@ -150,6 +154,80 @@ final class ConsentViewController: UIViewController {
             in: self,
             attNeeded: true
         )
+    }
+    
+    // MARK: Open custom webView
+    @objc private func openCustomWebView() {
+        let config = WebViewConfig(
+            backgroundColor: .cyan
+        )
+        
+        let webVC = ClickioConsentSDK.shared.webViewLoadUrl(
+            urlString: "https://account.clickio.com/public/test/solveit-demo/tcf-global.html",
+            config: config
+        )
+
+        webVCToRemove = webVC
+        addChild(webVC)
+        view.addSubview(webVC.view)
+        webVC.didMove(toParent: self)
+
+        // button for closing custom webView
+        let closeViewButton = UIView()
+        closeViewButton.backgroundColor = .red
+        
+        closeViewButton.translatesAutoresizingMaskIntoConstraints = false
+        webVC.view.addSubview(closeViewButton)
+        
+        // Controller for webView setup
+        webVC.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            webVC.view.widthAnchor.constraint(equalToConstant: 350),
+            webVC.view.heightAnchor.constraint(equalToConstant: 700),
+            webVC.view.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            webVC.view.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            closeViewButton.widthAnchor.constraint(equalToConstant: 50),
+            closeViewButton.heightAnchor.constraint(equalToConstant: 50),
+            closeViewButton.topAnchor.constraint(equalTo: webVC.view.topAnchor),
+            closeViewButton.trailingAnchor.constraint(equalTo: webVC.view.trailingAnchor)
+        ])
+        
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapToCloseCustomWebView))
+        closeViewButton.addGestureRecognizer(tapGesture)
+    }
+    
+    // MARK: Close custom webView
+    var webVCToRemove: WebViewController?
+    @objc func tapToCloseCustomWebView() {
+        webVCToRemove?.view.removeFromSuperview()
+    }
+    
+    // MARK: Clear Local Storage for WebView
+    @objc func clearLocalStorage() {
+        let dataStore = WKWebsiteDataStore.default()
+        let types = WKWebsiteDataStore.allWebsiteDataTypes()
+        let since = Date(timeIntervalSince1970: 0)
+        
+        dataStore.removeData(ofTypes: types, modifiedSince: since) {
+            // clear URLCache
+            URLCache.shared.removeAllCachedResponses()
+            
+            // clear cookie (httpCookieStore и HTTPCookieStorage)
+            dataStore.httpCookieStore.getAllCookies { cookies in
+                for cookie in cookies {
+                    dataStore.httpCookieStore.delete(cookie)
+                }
+                if let bundle = Bundle.main.bundleIdentifier {
+                    UserDefaults.standard.removePersistentDomain(forName: bundle)
+                    UserDefaults.standard.synchronize()
+                }
+                
+                DispatchQueue.main.async {
+                    print("✅ Cleared WKWebsiteDataStore (types: \(types)), cookies, URLCache and UserDefaults")
+                }
+            }
+        }
     }
     
     @objc private func getConsentData() {
@@ -240,7 +318,11 @@ final class ConsentViewController: UIViewController {
         verboseStack.spacing = 8
         verboseStack.translatesAutoresizingMaskIntoConstraints = false
         
-        [resurfaceModeButton, refreshButton, clearDataButton].forEach { btn in
+        [resurfaceModeButton,
+         customWebViewButton,
+         clearLocalStorageForWebView,
+         refreshButton,
+         clearDataButton].forEach { btn in
             btn.backgroundColor = .systemBlue
             btn.setTitleColor(.white, for: .normal)
             btn.layer.cornerRadius = 8
@@ -249,10 +331,14 @@ final class ConsentViewController: UIViewController {
         }
         
         resurfaceModeButton.setTitle("Resurface Mode", for: .normal)
+        customWebViewButton.setTitle("Open Custom WebView", for: .normal)
+        clearLocalStorageForWebView.setTitle("Clear local storage for webView", for: .normal)
         refreshButton.setTitle("Refresh Consent Data", for: .normal)
         clearDataButton.setTitle("Clear Data", for: .normal)
         
         resurfaceModeButton.addTarget(self, action: #selector(openResurfaceConsent), for: .touchUpInside)
+        customWebViewButton.addTarget(self, action: #selector(openCustomWebView), for: .touchUpInside)
+        clearLocalStorageForWebView.addTarget(self, action: #selector(clearLocalStorage), for: .touchUpInside)
         refreshButton.addTarget(self, action: #selector(getConsentData), for: .touchUpInside)
         clearDataButton.addTarget(self, action: #selector(clearUserDefaults), for: .touchUpInside)
         verboseLoggingSwitch.addTarget(self, action: #selector(toggleVerboseLogging), for: .valueChanged)
@@ -265,6 +351,8 @@ final class ConsentViewController: UIViewController {
         let controlsStack = UIStackView(arrangedSubviews: [
             verboseStack,
             resurfaceModeButton,
+            customWebViewButton,
+            clearLocalStorageForWebView,
             refreshButton,
             clearDataButton
         ])
