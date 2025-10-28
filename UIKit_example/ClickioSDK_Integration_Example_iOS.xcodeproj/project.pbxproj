@@ -465,7 +465,7 @@
 			repositoryURL = "https://github.com/ClickioTech/ClickioConsentSDK-IOS";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.5;
+				minimumVersion = 1.0.10;
 			};
 		};
 		C4EE07162DB7F63C00AA8A5F /* XCRemoteSwiftPackageReference "ClickioConsentSDK-IOS" */ = {
