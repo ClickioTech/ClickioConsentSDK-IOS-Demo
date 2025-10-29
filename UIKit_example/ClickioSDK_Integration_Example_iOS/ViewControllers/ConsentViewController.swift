@@ -218,10 +218,6 @@ final class ConsentViewController: UIViewController {
                 for cookie in cookies {
                     dataStore.httpCookieStore.delete(cookie)
                 }
-                if let bundle = Bundle.main.bundleIdentifier {
-                    UserDefaults.standard.removePersistentDomain(forName: bundle)
-                    UserDefaults.standard.synchronize()
-                }
                 
                 DispatchQueue.main.async {
                     print("✅ Cleared WKWebsiteDataStore (types: \(types)), cookies, URLCache and UserDefaults")
